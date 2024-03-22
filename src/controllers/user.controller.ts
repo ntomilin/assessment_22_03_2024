@@ -2,7 +2,7 @@ import {
     Body,
     Controller, Delete,
     Get,
-    HttpCode, NotFoundException, Param,
+    HttpCode, HttpStatus, NotFoundException, Param, ParseFilePipeBuilder,
     Post, StreamableFile,
     UploadedFile,
     UseInterceptors
@@ -11,6 +11,7 @@ import { UserService } from '../services/user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { toObjectId } from '../helpers/mongodb.helper';
 import { UserAvatarService } from '../services/user_avatar.service';
+import { CreateUserDto } from '../dto/CreateUser.dto';
 
 
 @Controller()
@@ -23,8 +24,11 @@ export class UserController {
     @UseInterceptors(FileInterceptor('file'))
     @HttpCode(201)
     async createUser(
-        @UploadedFile() file: Express.Multer.File,
-        @Body() userBody: { name: string, email: string }
+        @UploadedFile(
+            new ParseFilePipeBuilder()
+                .build({ errorHttpStatusCode: HttpStatus.BAD_REQUEST }),
+        ) file: Express.Multer.File,
+        @Body() userBody: CreateUserDto,
     ): Promise<any> {
         const imageId = await this.userAvatarService.store(file);
         return this.userService.createUser({ ...userBody, imageId });
