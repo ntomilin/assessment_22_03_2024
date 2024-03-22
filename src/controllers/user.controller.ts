@@ -5,7 +5,7 @@ import {
 import { UserService } from '../services/user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { toObjectId } from '../helpers/mongodb.helper';
-import { UserAvatarService } from '../services/user_avatar.service';
+import { UserAvatarService } from '../services/userAvatar.service';
 import { CreateUserDto } from '../dto/CreateUser.dto';
 import { RMQ_MESSAGES, RmqService } from '../modules/rmq/rmq.service';
 

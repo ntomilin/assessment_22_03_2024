@@ -4,8 +4,8 @@ import { UserController } from '../controllers/user.controller';
 import { UserService } from '../services/user.service';
 import { User, UserSchema } from '../schemas/user.schema';
 import { MulterModule } from '@nestjs/platform-express';
-import { UserAvatarService } from '../services/user_avatar.service';
-import { UserAvatarSchema } from '../schemas/user_avatar.schema';
+import { UserAvatarService } from '../services/userAvatar.service';
+import { UserAvatarSchema } from '../schemas/userAvatar.schema';
 import { RMQModule } from './rmq/rmq.module';
 
 @Module({

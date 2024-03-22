@@ -4,7 +4,7 @@ import { Connection, Model, mongo } from 'mongoose';
 import { GridFSBucket, ObjectId } from 'mongodb'
 
 import * as fs from 'fs';
-import { FileModel } from '../schemas/user_avatar.schema';
+import { FileModel } from '../schemas/userAvatar.schema';
 import { Transform } from 'stream';
 
 @Injectable()
