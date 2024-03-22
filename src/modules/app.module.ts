@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from '../controllers/app.controller';
-import { AppService } from '../services/app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserController } from '../controllers/user.controller';
 import { UserService } from '../services/user.service';
@@ -21,12 +19,10 @@ import { UserAvatarSchema } from '../schemas/user_avatar.schema';
         })
     ],
     controllers: [
-        AppController,
         UserController,
     ],
     providers:
         [
-            AppService,
             UserService,
             UserAvatarService,
         ],

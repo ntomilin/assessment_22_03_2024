@@ -4,7 +4,6 @@ import { User, UserDocument } from '../schemas/user.schema';
 import { Model } from 'mongoose';
 import { UserDto } from '../dto/User.dto';
 import { ObjectId } from 'mongodb'
-import { toObjectId } from '../helpers/mongodb.helper';
 
 @Injectable()
 export class UserService {

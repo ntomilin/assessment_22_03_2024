@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { User } from '../schemas/user.schema';
 import { Connection, Model, mongo } from 'mongoose';
 import { GridFSBucket, ObjectId } from 'mongodb'
 
@@ -16,18 +15,6 @@ export class UserAvatarService {
                 @InjectConnection() private readonly connection: Connection,
     ) {
         this.bucket = new mongo.GridFSBucket(this.connection.db);
-    }
-
-    private streamToBase64(stream: fs.ReadStream) {
-        return new Promise((resolve, reject) => {
-            const chunks = [];
-            stream.on('data', (chunk) => chunks.push(chunk));
-            stream.on('end', () => {
-                const buffer = Buffer.concat(chunks);
-                resolve(buffer.toString('base64'));
-            });
-            stream.on('error', reject);
-        });
     }
 
     store(file: Express.Multer.File): Promise<string> {
@@ -69,13 +56,8 @@ export class UserAvatarService {
         return this.userAvatarModel.findOne({ _id: imageId }).exec();
     }
 
-    getStream(id: ObjectId, opts: { start?: number; end?: number } = {}) {
+    getStream(id: ObjectId) {
         return this.bucket.openDownloadStream(id);
-        // return this.bucket.openDownloadStream(id, opts);
-    }
-
-    getList() {
-        return this.userAvatarModel.find().exec()
     }
 
     deleteForUser(id: ObjectId) {

@@ -84,7 +84,6 @@ export class UserController {
             throw new NotFoundException('Avatar not found');
         }
 
-
         await Promise.all([
             this.userAvatarService.deleteForUser(toObjectId(avatarInfo.id)),
             this.userService.deleteAvatar(userObjectId)
