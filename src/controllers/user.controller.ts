@@ -31,7 +31,10 @@ export class UserController {
         @Body() userBody: CreateUserDto,
     ): Promise<any> {
         const imageId = await this.userAvatarService.store(file);
-        return this.userService.createUser({ ...userBody, imageId });
+        return this.userService.createUser({
+            ...userBody,
+            imageId: toObjectId(imageId)
+        });
     }
 
     @Get('/users/:userId')
@@ -39,6 +42,7 @@ export class UserController {
         return this.userService.getUser(toObjectId(userId))
     }
 
+    // I think /userS/:userId/avatar would be better
     @Get('/user/:userId/avatar')
     async getUserAvatar(
         @Param('userId') userId: string,
@@ -63,6 +67,7 @@ export class UserController {
         });
     }
 
+    // I think /userS/:userId/avatar would be better
     @Delete('user/:userId/avatar')
     async deleteUserAvatar(@Param('userId') userId: string): Promise<any> {
         const userObjectId = toObjectId(userId);

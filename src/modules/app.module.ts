@@ -7,11 +7,7 @@ import { UserService } from '../services/user.service';
 import { User, UserSchema } from '../schemas/user.schema';
 import { MulterModule } from '@nestjs/platform-express';
 import { UserAvatarService } from '../services/user_avatar.service';
-import { FileModel, UserAvatarSchema } from '../schemas/user_avatar.schema';
-
-
-// TODO: change
-
+import { UserAvatarSchema } from '../schemas/user_avatar.schema';
 
 @Module({
     imports: [
