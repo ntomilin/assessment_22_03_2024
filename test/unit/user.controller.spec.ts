@@ -6,8 +6,9 @@ import { UserAvatarService } from '../../src/services/user_avatar.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../../src/schemas/user.schema';
 import { UserAvatarSchema } from '../../src/schemas/user_avatar.schema';
-import { MulterFile } from '../data/user.controller.data';
+import { MulterFile, UserData } from '../data/user.controller.data';
 import { StreamableFile } from '@nestjs/common';
+import { RMQModule } from '../../src/modules/rmq/rmq.module';
 
 describe('UserController', () => {
     let userController: UserController;
@@ -29,6 +30,7 @@ describe('UserController', () => {
                     { name: User.name, schema: UserSchema },
                     { name: 'fs.files', schema: UserAvatarSchema },
                 ]),
+                RMQModule,
             ]
         }).compile();
 
@@ -38,45 +40,43 @@ describe('UserController', () => {
     });
 
     describe('Test user creation', () => {
-        it('Simply create user', async () => {
-            const userData = { name: 'John Doe', email: 'john@example.com' };
-
-            const createdUser = { _id: new ObjectId(), ...userData }; // Mock the created user object
+        it('Create user', async () => {
+            const imageId = new ObjectId();
+            const createdUser = { _id: new ObjectId(), ...UserData, imageId: imageId }; // Mock the created user object
 
             // @ts-ignore
             jest.spyOn(userService, 'createUser').mockResolvedValue(createdUser);
+            jest.spyOn(userAvatarService, 'store').mockResolvedValue(Promise.resolve(imageId.toString()));
 
-            const result = await userController.createUser(MulterFile, userData);
+            const result = await userController.createUser(MulterFile, UserData);
 
             expect(result).toEqual(createdUser);
         });
 
         it('Create & get user', async () => {
-            const userData = { name: 'John Doe', email: 'john@example.com' };
-            // @ts-ignore
             const id = new ObjectId();
             const imageId =  new ObjectId();
 
-            const createdUser = { _id: id, ...userData, imageId }; // Mock the created user object
+            const createdUser = { _id: id, ...UserData, imageId }; // Mock the created user object
 
             // @ts-ignore
             jest.spyOn(userService, 'createUser').mockResolvedValue(createdUser);
+            jest.spyOn(userAvatarService, 'store').mockResolvedValue(Promise.resolve(imageId.toString()));
             jest.spyOn(userService, 'getUser').mockResolvedValue({
                 ...createdUser,
             });
 
-            const createResult = await userController.createUser(MulterFile, userData);
+            const createResult = await userController.createUser(MulterFile, UserData);
             const fetchResult = await userController.getUserById(id.toString());
 
             expect(createResult).toEqual(fetchResult);
         });
 
         it('Create user & get avatar', async () => {
-            const userData = { name: 'John Doe', email: 'john@example.com' };
             const id = new ObjectId();
             const imageId =  new ObjectId();
 
-            const createdUser = { _id: id, ...userData, imageId }; // Mock the created user object
+            const createdUser = { _id: id, ...UserData, imageId }; // Mock the created user object
 
             // @ts-ignore
             jest.spyOn(userService, 'createUser').mockResolvedValue(createdUser);
@@ -90,15 +90,15 @@ describe('UserController', () => {
 
             const fetchResult = await userController.getUserAvatar(id.toString());
 
+            expect(1).toEqual(2);
             // I'm not sure how check this one tbh
         });
 
         it('Create user & remove avatar', async () => {
-            const userData = { name: 'John Doe', email: 'john@example.com' };
             const id = new ObjectId();
             const imageId =  new ObjectId();
 
-            const createdUser = { _id: id, ...userData, imageId }; // Mock the created user object
+            const createdUser = { _id: id, ...UserData, imageId }; // Mock the created user object
 
             // @ts-ignore
             jest.spyOn(userService, 'createUser').mockResolvedValue(createdUser);
@@ -120,7 +120,6 @@ describe('UserController', () => {
             jest.spyOn(userAvatarService, 'deleteForUser').mockResolvedValue();
             const fetchResult = await userController.deleteUserAvatar(id.toString());
 
-            // @ts-ignore
             expect(fetchResult).toEqual({ success: true });
         });
     });

@@ -9,3 +9,5 @@ export const MulterFile: Express.Multer.File = {
     path: 'dist/upload/3d56759dbcb1a1d53687ef1f1c3e6350',
     size: 628588
 } as const;
+
+export const UserData = { name: 'John Doe', email: 'john@example.com' } as const;
