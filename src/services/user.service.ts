@@ -1,18 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from '../schemas/user.schema';
-import { Model, ObjectId } from 'mongoose';
+import { User, UserDocument } from '../schemas/user.schema';
+import { Model, Document } from 'mongoose';
+import { UserDto } from '../dto/user.dto';
+import { GridFSBucket, ObjectId } from 'mongodb'
+import { toObjectId } from '../helpers/mongodb.helper';
 
 @Injectable()
 export class UserService {
-
     constructor(@InjectModel(User.name) private userModel: Model<User>) {
     }
 
-    async createUser(name: string, imagePath: string, email: string): Promise<User> {
+    async createUser({ name, imageId, email }: UserDto): Promise<UserDocument> {
         return this.userModel.create({
             name,
-            imagePath,
+            imageId: toObjectId(imageId),
             email
         });
     }
@@ -21,11 +23,11 @@ export class UserService {
         return this.userModel.findById(id).exec();
     }
 
-    async deleteUserAvatar(): Promise<any> {
-
-    }
-
-    async getUserAvatar(): Promise<any> {
-
+    async deleteAvatar(id: ObjectId) {
+        return this.userModel.updateOne({
+            _id: id
+        }, {
+            imageId: null
+        })
     }
 }

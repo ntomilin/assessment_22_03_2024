@@ -5,6 +5,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserController } from '../controllers/user.controller';
 import { UserService } from '../services/user.service';
 import { User, UserSchema } from '../schemas/user.schema';
+import { MulterModule } from '@nestjs/platform-express';
+import { UserAvatarService } from '../services/user_avatar.service';
+import { FileModel, UserAvatarSchema } from '../schemas/user_avatar.schema';
+
+
+// TODO: change
 
 
 @Module({
@@ -12,16 +18,23 @@ import { User, UserSchema } from '../schemas/user.schema';
         MongooseModule.forRoot('mongodb://localhost/assessment_22_03_2024_MT'),
         MongooseModule.forFeature([
             { name: User.name, schema: UserSchema },
-        ])
+            { name: 'fs.files', schema: UserAvatarSchema },
+        ]),
+        MulterModule.register({
+            dest: './dist/upload',
+        })
     ],
     controllers: [
         AppController,
-        UserController
+        UserController,
     ],
-    providers: [
-        AppService,
-        UserService,
-    ],
+    providers:
+        [
+            AppService,
+            UserService,
+            UserAvatarService,
+        ],
 })
+
 export class AppModule {
 }
