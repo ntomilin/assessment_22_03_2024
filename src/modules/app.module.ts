@@ -6,6 +6,7 @@ import { User, UserSchema } from '../schemas/user.schema';
 import { MulterModule } from '@nestjs/platform-express';
 import { UserAvatarService } from '../services/user_avatar.service';
 import { UserAvatarSchema } from '../schemas/user_avatar.schema';
+import { RMQModule } from './rmq/rmq.module';
 
 @Module({
     imports: [
@@ -16,7 +17,8 @@ import { UserAvatarSchema } from '../schemas/user_avatar.schema';
         ]),
         MulterModule.register({
             dest: './dist/upload',
-        })
+        }),
+        RMQModule,
     ],
     controllers: [
         UserController,

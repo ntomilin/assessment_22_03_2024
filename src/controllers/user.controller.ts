@@ -1,23 +1,21 @@
 import {
-    Body,
-    Controller, Delete,
-    Get,
-    HttpCode, HttpStatus, NotFoundException, Param, ParseFilePipeBuilder,
-    Post, StreamableFile,
-    UploadedFile,
-    UseInterceptors
+    Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param,
+    ParseFilePipeBuilder, Post, StreamableFile, UploadedFile, UseInterceptors
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { toObjectId } from '../helpers/mongodb.helper';
 import { UserAvatarService } from '../services/user_avatar.service';
 import { CreateUserDto } from '../dto/CreateUser.dto';
+import { RMQ_MESSAGES, RmqService } from '../modules/rmq/rmq.service';
 
 
 @Controller()
 export class UserController {
     constructor(private userService: UserService,
-                private userAvatarService: UserAvatarService) {
+                private userAvatarService: UserAvatarService,
+                private rmqService: RmqService,
+    ) {
     }
 
     @Post('/users')
@@ -31,10 +29,14 @@ export class UserController {
         @Body() userBody: CreateUserDto,
     ): Promise<any> {
         const imageId = await this.userAvatarService.store(file);
-        return this.userService.createUser({
+        const user = await this.userService.createUser({
             ...userBody,
             imageId: toObjectId(imageId)
         });
+
+        this.rmqService.newCustomerMessage(user._id);
+
+        return user;
     }
 
     @Get('/users/:userId')
